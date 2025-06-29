@@ -17,6 +17,11 @@ interface Props {
 
 export default function DataUploader({ onDataParsed }: Props) {
   const [status, setStatus] = useState<string>('');
+  const [allData, setAllData] = useState<ParsedData>({
+    clients: [],
+    workers: [],
+    tasks: [],
+  });
 
   const handleFile = (file: File, type: keyof ParsedData) => {
     const extension = file.name.split('.').pop()?.toLowerCase();
@@ -27,7 +32,9 @@ export default function DataUploader({ onDataParsed }: Props) {
         skipEmptyLines: true,
         complete: (results: any) => {
           setStatus(`${type} loaded successfully`);
-          onDataParsed((prev) => ({ ...prev, [type]: results.data }));
+          const updatedData = { ...allData, [type]: results.data };
+          setAllData(updatedData);
+          onDataParsed(updatedData);
         },
         error: () => {
           setStatus(`Error parsing ${type} CSV`);
@@ -42,7 +49,9 @@ export default function DataUploader({ onDataParsed }: Props) {
         const sheet = workbook.Sheets[sheetName];
         const parsed = XLSX.utils.sheet_to_json(sheet);
         setStatus(`${type} loaded successfully`);
-        onDataParsed((prev) => ({ ...prev, [type]: parsed }));
+        const updatedData = { ...allData, [type]: parsed };
+        setAllData(updatedData);
+        onDataParsed(updatedData);
       };
       reader.readAsArrayBuffer(file);
     } else {
@@ -54,7 +63,7 @@ export default function DataUploader({ onDataParsed }: Props) {
     <Box>
       <Typography variant="h6" gutterBottom>📤 Upload Data Files</Typography>
       <Grid container spacing={2}>
-        <Grid item>
+        <Grid item xs={12} sm={4}>
           <Button variant="outlined" component="label">
             Upload Clients
             <input hidden type="file" accept=".csv,.xlsx" onChange={(e) => {
@@ -62,7 +71,7 @@ export default function DataUploader({ onDataParsed }: Props) {
             }} />
           </Button>
         </Grid>
-        <Grid item>
+        <Grid item xs={12} sm={4}>
           <Button variant="outlined" component="label">
             Upload Workers
             <input hidden type="file" accept=".csv,.xlsx" onChange={(e) => {
@@ -70,7 +79,7 @@ export default function DataUploader({ onDataParsed }: Props) {
             }} />
           </Button>
         </Grid>
-        <Grid item>
+        <Grid item xs={12} sm={4}>
           <Button variant="outlined" component="label">
             Upload Tasks
             <input hidden type="file" accept=".csv,.xlsx" onChange={(e) => {

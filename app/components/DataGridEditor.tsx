@@ -95,7 +95,7 @@ export default function DataGridEditor({ parsedData }: Props) {
             <DataGrid
               rows={rows}
               columns={columns}
-              disableRowSelectionOnClick
+              disableSelectionOnClick
               processRowUpdate={(newRow) => {
                 parsedData[datasets[tabIndex]][newRow.id] = { ...newRow };
                 return newRow;
